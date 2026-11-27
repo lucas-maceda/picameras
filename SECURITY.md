@@ -32,7 +32,10 @@ PiCameras, y las vulnerabilidades del firmware de las propias cámaras. Para lo 
 
 1. **Ningún secreto en el repositorio.** Ni contraseñas, ni claves, ni tokens, ni certificados privados, ni
    ficheros `.env`, ni siquiera «de prueba» que funcionen contra una instalación real. Los tests usan secretos
-   generados en el momento.
+   generados en el momento. Tampoco datos personales de quien contribuye (IPs de su red, correos, números de
+   serie). Lo frena el hook `.githooks/pre-commit` (`git config core.hooksPath .githooks`), que lee además una
+   lista privada de cada persona en `.git/info/datos-privados`, que nunca se sube. Los commits van con el
+   correo noreply de GitHub.
 2. **Sin credenciales por defecto.** No existe usuario `admin/admin` ni nada parecido. En el primer arranque,
    PiCameras genera un **código de configuración** aleatorio de 80 bits y solo lo enseña en la consola y en un
    fichero (`setup-code.txt`) que solo puede leer quien tenga acceso al equipo. Sin ese código no se puede crear

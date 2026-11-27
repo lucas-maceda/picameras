@@ -1,0 +1,48 @@
+#!/bin/sh
+# Frena cualquier commit que lleve secretos o datos privados (SECURITY.md, regla 1).
+# Se activa una vez por clon:  git config core.hooksPath .githooks
+#
+# Los datos privados de cada persona (sus IPs, correos, números de serie…) NO van aquí, porque este fichero es
+# público: van en .git/info/datos-privados, uno por línea, que Git nunca sube.
+set -u
+fail=0
+added=$(git diff --cached -U0 --no-color --diff-filter=ACMR | grep '^+' | grep -v '^+++' || true)
+files=$(git diff --cached --name-only --diff-filter=ACMR)
+
+# 1. Secretos con forma conocida.
+if printf '%s\n' "$added" | grep -nE 'BEGIN [A-Z ]*PRIVATE KEY|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|sk-[A-Za-z0-9_-]{32,}|AIza[0-9A-Za-z_-]{35}'; then
+  echo "✗ Esto parece una clave o un token." >&2; fail=1
+fi
+
+# 2. Ficheros que nunca van al repo.
+bad=$(printf '%s\n' "$files" | grep -iE '(^|/)(\.env(\..+)?|state\.json|secret\.key|setup-code\.txt|[^/]*\.(pem|key|p12|pfx|log|sqlite3?|db))$' | grep -v '\.env\.example$' || true)
+if [ -n "$bad" ]; then
+  echo "✗ Ficheros que no pueden subirse:" >&2; printf '  %s\n' $bad >&2; fail=1
+fi
+
+# 3. Datos privados de esta persona (lista local, nunca versionada).
+priv="$(git rev-parse --git-dir)/info/datos-privados"
+if [ -f "$priv" ]; then
+  pats=$(mktemp)
+  grep -vE '^[[:space:]]*(#|$)' "$priv" > "$pats" || true
+  if [ -s "$pats" ] && printf '%s\n' "$added" | grep -nF -f "$pats"; then
+    echo "✗ El cambio contiene datos de .git/info/datos-privados." >&2; fail=1
+  fi
+  rm -f "$pats"
+fi
+
+# 4. El correo del autor queda público en el historial: tiene que ser el noreply de GitHub.
+case "$(git config user.email)" in
+  *@users.noreply.github.com) ;;
+  *) echo "✗ Configura el correo noreply de GitHub: git config user.email <id>+<usuario>@users.noreply.github.com" >&2; fail=1 ;;
+esac
+
+# 5. gitleaks, si está instalado.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --no-banner --redact || fail=1
+fi
+
+if [ "$fail" -ne 0 ]; then
+  echo "Commit bloqueado. Quita el dato (y si ya era real, cámbialo: ya no es secreto)." >&2
+  exit 1
+fi

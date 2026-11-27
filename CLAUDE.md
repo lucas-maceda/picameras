@@ -17,3 +17,10 @@ Al trabajar aquí:
 - Si una tarea choca con las reglas de `SECURITY.md`, no la resuelvas «de paso»: dilo y propón la alternativa
   segura. Cambiar una regla exige editar `SECURITY.md` con el porqué en la misma PR.
 - Antes de cada commit, revisa el diff buscando secretos y datos de la red o las cámaras de Lucas.
+- **Nunca suben al repo claves de API, tokens, ni datos de Lucas** (sus IPs, correos, números de serie, el código
+  de configuración, la huella de su certificado ni nada de `%AppData%\picameras`). Lo frena el hook
+  `.githooks/pre-commit` (actívalo con `git config core.hooksPath .githooks` si no lo está). Su lista de datos
+  privados vive en `.git/info/datos-privados`, que no se versiona: si aparece un dato nuevo de Lucas (otra IP,
+  otra cámara), añádelo ahí. Nunca saltes el hook con `--no-verify`.
+- Los commits se firman con el correo noreply de GitHub (`<id>+lucas-maceda@users.noreply.github.com`), nunca con
+  un correo personal: el autor de cada commit es público.
