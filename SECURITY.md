@@ -33,9 +33,13 @@ PiCameras, y las vulnerabilidades del firmware de las propias cámaras. Para lo 
 1. **Ningún secreto en el repositorio.** Ni contraseñas, ni claves, ni tokens, ni certificados privados, ni
    ficheros `.env`, ni siquiera «de prueba» que funcionen contra una instalación real. Los tests usan secretos
    generados en el momento.
-2. **Sin credenciales por defecto.** No existe usuario `admin/admin` ni nada parecido. En el primer arranque, el
-   usuario crea su contraseña; hasta entonces, el programa solo acepta conexiones desde el propio equipo
-   (`localhost`) para hacer esa configuración inicial.
+2. **Sin credenciales por defecto.** No existe usuario `admin/admin` ni nada parecido. En el primer arranque,
+   PiCameras genera un **código de configuración** aleatorio de 80 bits y solo lo enseña en la consola y en un
+   fichero (`setup-code.txt`) que solo puede leer quien tenga acceso al equipo. Sin ese código no se puede crear
+   el usuario. El código caduca en cuanto se usa, y los intentos fallidos bloquean la IP 15 minutos.
+   *Por qué no «solo desde localhost», como decía la primera versión:* una Raspberry Pi suele ir sin pantalla, así
+   que la configuración se hace desde otro equipo de la red. El código cumple el mismo propósito (solo configura
+   quien tiene acceso físico o de administrador al equipo) sin obligar a conectar un monitor.
 3. **Secretos por instalación.** Las claves de sesión, de cifrado y de firma, y el certificado HTTPS se generan
    en el primer arranque con un generador criptográficamente seguro (`crypto/rand`, `secrets` o equivalente). Se
    guardan fuera del directorio del código, con permisos solo para el usuario del servicio.
@@ -46,9 +50,12 @@ PiCameras, y las vulnerabilidades del firmware de las propias cámaras. Para lo 
 6. **Autenticación en todo.** Interfaz web, API, WebSocket, WebRTC, snapshots, HLS/MJPEG y RTSP de salida. No
    hay endpoints «ocultos», «de depuración» ni rutas que se salten la autenticación: si una ruta existe, está en
    el código y cualquiera la conoce.
-7. **El motor (go2rtc) nunca se expone directamente.** Su API y sus puertos escuchan solo en `127.0.0.1` y todo
-   pasa por la capa de autenticación de PiCameras. La configuración que generamos para go2rtc lo garantiza y
-   hay un test que lo comprueba.
+7. **El motor (go2rtc) nunca se expone directamente.** No abre **ningún** puerto de red: su API escucha solo en
+   un socket Unix dentro del directorio de datos (que tiene permisos `0700`), y sus servidores RTSP, WebRTC, RTMP
+   y HomeKit van apagados. Solo se cargan los módulos imprescindibles (nunca `exec`, `expr`, `ffmpeg`, `ngrok`…)
+   y solo se registran tres rutas de su API. Las cámaras se le dan de alta en memoria: go2rtc no escribe ninguna
+   credencial en disco. Todo el vídeo sale por un WebSocket de PiCameras con sesión. Hay un test que comprueba
+   esta configuración (`internal/engine/engine_test.go`).
 8. **Solo red local por defecto, y con HTTPS.** No se abren puertos a internet (nada de UPnP). Para el acceso
    remoto, documentamos Tailscale o WireGuard. Límite de intentos y bloqueo temporal en el inicio de sesión.
 9. **Las cámaras también se blindan.** El asistente obliga a cambiar las contraseñas de fábrica de la cámara (o
@@ -58,6 +65,26 @@ PiCameras, y las vulnerabilidades del firmware de las propias cámaras. Para lo 
     comando local), nunca por red.
 11. **Cadena de suministro.** Dependencias con versión fijada, escaneo de secretos y de dependencias en cada PR, y
     binarios publicados con su suma de comprobación y firma.
+
+## Estado en la versión actual
+
+| Regla | Estado |
+|---|---|
+| 1, 3, 4, 5, 6, 7, 8, 10 | Cumplidas y cubiertas por tests (`go test ./...`) |
+| 2 | Cumplida con el código de configuración |
+| 9 | **Pendiente.** PiCameras no puede cambiar la contraseña de cada marca de cámara. Falta, como mínimo, avisar cuando una cámara entra sin contraseña o con una de fábrica |
+| 11 | Parcial: dependencias fijadas, go2rtc descargado con SHA-256 fijado, Actions fijadas por SHA, gitleaks y govulncheck en la CI. **Falta** firmar los binarios cuando haya releases |
+
+**Límites conocidos, para que nadie se lleve a engaño:**
+
+- El certificado HTTPS es autofirmado. La primera vez, el navegador avisa: compara la huella SHA-256 que muestra
+  PiCameras al arrancar con la del navegador.
+- La clave que cifra las contraseñas de las cámaras vive en el mismo directorio de datos. Protege una copia
+  suelta de `state.json`, pero no a quien se lleve el directorio entero (y quien puede hacer eso ya tiene el
+  equipo).
+- Las sesiones viven en memoria: al reiniciar PiCameras hay que volver a entrar.
+- Lo que viaja entre PiCameras y una cámara (RTSP) suele ir sin cifrar, porque así lo hacen casi todas las
+  cámaras. Por eso entre sitios distintos se va por Tailscale o WireGuard, nunca abriendo puertos.
 
 ## Cómo se revisa
 

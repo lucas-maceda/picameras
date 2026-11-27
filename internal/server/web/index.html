@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <meta name="referrer" content="no-referrer">
+  <title>PiCameras</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="topbar" hidden>
+    <span class="brand"><img src="icon.svg" alt="" width="22" height="22"><span>PiCameras</span></span>
+    <nav class="actions">
+      <button type="button" class="btn primary" data-action="add">Añadir cámara</button>
+      <button type="button" class="btn ghost" data-action="account">Cuenta</button>
+      <button type="button" class="btn ghost" data-action="logout">Salir</button>
+    </nav>
+  </header>
+
+  <main id="view" aria-live="polite"></main>
+
+  <!-- Buscar cámaras -->
+  <dialog id="discover-dialog" aria-labelledby="discover-title">
+    <form method="dialog" class="sheet">
+      <div class="sheet-head">
+        <h2 id="discover-title">Añadir cámara</h2>
+        <button class="btn ghost icon" value="close" aria-label="Cerrar">✕</button>
+      </div>
+      <p class="hint">Busco cámaras en la red de este equipo. Para la de otro sitio (el local, el pueblo) unido
+        por Tailscale o WireGuard, escribe su red abajo.</p>
+      <div class="row">
+        <button type="button" class="btn primary" data-action="scan-local">Buscar en esta red</button>
+        <button type="button" class="btn" data-action="manual">Añadir a mano</button>
+      </div>
+      <div class="row">
+        <label class="grow">Otra red
+          <input name="prefix" placeholder="192.168.50.0/24" inputmode="decimal" autocomplete="off">
+        </label>
+        <button type="button" class="btn" data-action="scan-remote">Buscar ahí</button>
+      </div>
+      <p class="status-line" data-role="discover-status"></p>
+      <ul class="found" data-role="found"></ul>
+    </form>
+  </dialog>
+
+  <!-- Alta y edición -->
+  <dialog id="camera-dialog" aria-labelledby="camera-title">
+    <form class="sheet" novalidate>
+      <div class="sheet-head">
+        <h2 id="camera-title">Cámara</h2>
+        <button type="button" class="btn ghost icon" data-action="close" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="grid2">
+        <label>Nombre <input name="name" required maxlength="60" placeholder="Entrada"></label>
+        <label>Ubicación <input name="site" list="sites" maxlength="40" placeholder="Casa"></label>
+      </div>
+      <datalist id="sites"></datalist>
+      <label>Tipo
+        <select name="kind">
+          <option value="rtsp">RTSP: la mayoría de cámaras IP</option>
+          <option value="onvif">ONVIF: la cámara dice dónde está el vídeo</option>
+          <option value="yihack">YI con el firmware yi-hack</option>
+          <option value="http">MJPEG o JPEG por HTTP</option>
+        </select>
+      </label>
+      <div class="grid2">
+        <label>Dirección <input name="host" required placeholder="192.168.1.50" autocomplete="off" spellcheck="false"></label>
+        <label>Puerto <input name="port" inputmode="numeric" placeholder="554" autocomplete="off"></label>
+      </div>
+      <label data-kinds="rtsp">Marca (rellena las rutas)
+        <select name="preset"><option value="">Elige tu marca…</option></select>
+      </label>
+      <div class="grid2" data-kinds="rtsp http">
+        <label>Ruta <input name="path" placeholder="/stream1" autocomplete="off" spellcheck="false"></label>
+        <label data-kinds="rtsp">Ruta calidad baja <input name="subPath" placeholder="/stream2 (opcional)" autocomplete="off" spellcheck="false"></label>
+      </div>
+      <div class="grid2">
+        <label>Usuario de la cámara <input name="username" autocomplete="off" spellcheck="false"></label>
+        <label>Contraseña de la cámara <input name="password" type="password" autocomplete="new-password"></label>
+      </div>
+      <p class="hint" data-kinds="yihack">Activa RTSP en la web del yi-hack y pon una contraseña allí; usa la
+        misma aquí.</p>
+      <div class="test-result" data-role="test-result" hidden>
+        <video muted playsinline></video>
+        <p></p>
+      </div>
+      <p class="error" data-role="camera-error" role="alert"></p>
+      <div class="row end">
+        <button type="button" class="btn danger" data-action="delete" hidden>Borrar</button>
+        <span class="grow"></span>
+        <button type="button" class="btn" data-action="test">Probar</button>
+        <button type="submit" class="btn primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Cuenta -->
+  <dialog id="account-dialog" aria-labelledby="account-title">
+    <form class="sheet narrow" novalidate>
+      <div class="sheet-head">
+        <h2 id="account-title">Cambiar contraseña</h2>
+        <button type="button" class="btn ghost icon" data-action="close" aria-label="Cerrar">✕</button>
+      </div>
+      <label>Contraseña actual <input name="current" type="password" autocomplete="current-password" required></label>
+      <label>Nueva (mínimo 10 caracteres) <input name="new" type="password" autocomplete="new-password" minlength="10" required></label>
+      <p class="hint">Se cerrarán las demás sesiones abiertas.</p>
+      <p class="error" role="alert"></p>
+      <div class="row end"><button type="submit" class="btn primary">Cambiar</button></div>
+    </form>
+  </dialog>
+</body>
+</html>
