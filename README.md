@@ -6,6 +6,13 @@ Wi-Fi de consumo que vienen atadas a la app y la nube del fabricante.
 
 > **Estado:** en investigación. Todavía no hay código.
 
+## Premisa de seguridad
+
+**El código es público; tus cámaras no.** Tener todo el código de PiCameras delante no da ninguna forma de entrar
+en las cámaras de nadie: no hay contraseñas por defecto, ni claves en el repositorio, ni puertas traseras. Toda la
+seguridad descansa en secretos que se generan en cada instalación y nunca salen de ella. Las reglas completas y
+cómo informar de una vulnerabilidad están en [SECURITY.md](SECURITY.md).
+
 ## Documentación
 
 - [Investigación inicial (27-nov-2026)](docs/investigacion/2026-11-27-picameras-investigacion-inicial.md):

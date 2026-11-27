@@ -1,0 +1,32 @@
+# Secretos y datos de cada instalación: nunca al repositorio (ver SECURITY.md)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+data/
+config.local.*
+*.db
+*.sqlite
+*.sqlite3
+
+# go2rtc: la configuración generada lleva credenciales de las cámaras
+go2rtc.yaml
+go2rtc.yml
+
+# Grabaciones y capturas
+recordings/
+snapshots/
+*.mp4
+*.mkv
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/settings.local.json
