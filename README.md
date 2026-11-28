@@ -19,7 +19,7 @@ cómo informar de una vulnerabilidad están en [SECURITY.md](SECURITY.md).
 - **Busca las cámaras solo:** ONVIF (WS-Discovery), barrido de puertos RTSP y reconocimiento de marcas y del
   yi-hack. También en la red de otro sitio unido por VPN.
 - **Te ayuda a darlas de alta:** rutas RTSP por marca y un botón *Probar* que enseña un fotograma antes de guardar.
-- **Mosaico por ubicaciones** (Casa, Local, Pueblo…) en calidad baja y vista grande en calidad alta, en el
+- **Mosaico por ubicaciones** (por ejemplo, una por cada sitio) en calidad baja y vista grande en calidad alta, en el
   navegador del PC o del móvil.
 - **Seguro sin configurar nada:** HTTPS propio, usuario creado con un código de un solo uso, solo red local,
   límite de intentos y el motor de vídeo (go2rtc) sin un solo puerto abierto.

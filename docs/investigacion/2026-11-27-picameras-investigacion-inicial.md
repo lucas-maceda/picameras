@@ -13,7 +13,7 @@ Un programa **open source** para ver y gestionar las cámaras de una red local:
 - **Cámaras Wi-Fi de consumo:** el problema de partida es que estas cámaras traen *bloatware* (app y nube del
   fabricante) y no se puede llegar a ellas de forma cómoda.
 
-Primer modelo de referencia: **YI Dome Guard YRS.3019**, que tenemos aquí.
+Primer modelo de referencia: **YI Dome Guard YRS.3019**.
 
 ## 2. Lo que ya existe
 
@@ -116,13 +116,11 @@ Nunca se fuerza un build cambiándole el nombre a los ficheros.
 
 **Lectura:** es un experimento para más adelante, no la base del proyecto.
 
-### 3.4 Datos que faltan de nuestra cámara
+### 3.4 Antes de elegir camino con una YI concreta
 
-- [ ] **Versión de firmware** (en YI Home: Ajustes → Información de la cámara).
-- [ ] **Prefijo del número de serie** (YRS…, IFUS…, QFUS…).
-- [ ] **IP en la red local.** En el escaneo del 27-nov (192.168.1.0/24, puertos 23, 80, 443, 554, 8000, 8080,
-  8554, 34567, 6668, 8443 y 1935) no apareció nada que parezca una cámara. Encaja con que, de serie, no abre
-  puertos de cámara. Puede que estuviera apagada o en otra red.
+- Mirar la **versión de firmware** (en YI Home: Ajustes → Información de la cámara).
+- Mirar el **prefijo del número de serie** (YRS…, IFUS…, QFUS…) y buscar su fila en la tabla de compatibilidad.
+- De serie, la cámara no abre puertos de cámara en la red local, así que un escaneo de puertos no la encuentra.
 
 ## 4. Dirección propuesta (pendiente de aprobar)
 

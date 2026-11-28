@@ -80,7 +80,7 @@ func (e *env) do(method, path string, body any, opts ...reqOpt) *httptest.Respon
 		rd = bytes.NewReader(b)
 	}
 	r := httptest.NewRequest(method, "https://picam.local:8443"+path, rd)
-	r.RemoteAddr = "192.168.1.30:50000"
+	r.RemoteAddr = "192.168.99.30:50000"
 	if body != nil {
 		r.Header.Set("Content-Type", "application/json")
 	}
@@ -105,7 +105,7 @@ func sessionFrom(w *httptest.ResponseRecorder) string {
 // setup hace la configuración inicial y devuelve la cookie de sesión.
 func (e *env) setup() string {
 	w := e.do("POST", "/api/setup", map[string]string{
-		"code": e.srv.SetupCode(), "username": "lucas", "password": "contraseña-larga-1",
+		"code": e.srv.SetupCode(), "username": "admin-prueba", "password": "contraseña-larga-1",
 	})
 	if w.Code != 200 {
 		e.t.Fatalf("setup: %d %s", w.Code, w.Body)
@@ -172,17 +172,17 @@ func TestLoginAndLockout(t *testing.T) {
 	e := newEnv(t)
 	e.setup()
 	for i := 0; i < 5; i++ {
-		w := e.do("POST", "/api/login", map[string]string{"username": "lucas", "password": "mala-mala-mala"})
+		w := e.do("POST", "/api/login", map[string]string{"username": "admin-prueba", "password": "mala-mala-mala"})
 		if w.Code != http.StatusUnauthorized {
 			t.Fatalf("intento %d: %d", i, w.Code)
 		}
 	}
-	w := e.do("POST", "/api/login", map[string]string{"username": "lucas", "password": "contraseña-larga-1"})
+	w := e.do("POST", "/api/login", map[string]string{"username": "admin-prueba", "password": "contraseña-larga-1"})
 	if w.Code != http.StatusTooManyRequests {
 		t.Fatalf("no bloquea tras 5 fallos: %d", w.Code)
 	}
 	// Otra IP de la red sí puede entrar.
-	w = e.do("POST", "/api/login", map[string]string{"username": "lucas", "password": "contraseña-larga-1"}, fromIP("192.168.1.31:1"))
+	w = e.do("POST", "/api/login", map[string]string{"username": "admin-prueba", "password": "contraseña-larga-1"}, fromIP("192.168.99.31:1"))
 	if w.Code != 200 || sessionFrom(w) == "" {
 		t.Fatalf("login bueno rechazado: %d", w.Code)
 	}
@@ -221,7 +221,7 @@ func TestCameraPasswordNeverLeaks(t *testing.T) {
 	e := newEnv(t)
 	tok := e.setup()
 	const secret = "MiClaveDeCamara#2026"
-	in := map[string]any{"name": "Pueblo patio", "site": "Pueblo", "kind": "rtsp", "host": "192.168.50.20",
+	in := map[string]any{"name": "Patio", "site": "Sitio B", "kind": "rtsp", "host": "192.168.99.20",
 		"path": "/stream1", "subPath": "/stream2", "username": "admin", "password": secret}
 	w := e.do("POST", "/api/cameras", in, withCookie(tok))
 	if w.Code != http.StatusCreated {
@@ -243,7 +243,7 @@ func TestCameraPasswordNeverLeaks(t *testing.T) {
 	src := e.eng.streams[id]
 	sub := e.eng.streams[id+"_sub"]
 	e.eng.mu.Unlock()
-	if !strings.Contains(src, "MiClaveDeCamara%232026@192.168.50.20:554/stream1") || !strings.HasSuffix(sub, "/stream2") {
+	if !strings.Contains(src, "MiClaveDeCamara%232026@192.168.99.20:554/stream1") || !strings.HasSuffix(sub, "/stream2") {
 		t.Fatalf("fuente para go2rtc inesperada: %s / %s", src, sub)
 	}
 

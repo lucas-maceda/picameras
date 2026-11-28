@@ -1,6 +1,6 @@
 # PiCameras v1: diseño
 
-> Fecha: 28-nov-2026 · Autor: Lucas (con Claude) · Estado: implementado en la rama `feat/app-v1`
+> Fecha: 28-nov-2026 · Autor: lucas-maceda (con Claude) · Estado: implementado en la rama `feat/app-v1`
 
 ## Objetivo
 
@@ -9,7 +9,7 @@ de la red y que cumpla la premisa del proyecto: **tener el código no da ninguna
 nadie** ([SECURITY.md](../../../SECURITY.md)).
 
 El encargo: nada sofisticado, que vaya bien en una Raspberry Pi barata y en un PC y que encuentre todas las cámaras.
-Además, tiene que poder juntar las cámaras de varios sitios (otro local, una segunda vivienda).
+Además, tiene que poder juntar las cámaras de varios sitios (otro local, otra vivienda…).
 
 ## Cómo estaba
 

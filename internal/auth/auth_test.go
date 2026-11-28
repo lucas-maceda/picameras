@@ -86,12 +86,12 @@ func TestLimiter(t *testing.T) {
 	now := time.Now()
 	l.now = func() time.Time { return now }
 	for i := 0; i < 3; i++ {
-		if b, _ := l.Blocked("192.168.1.9:1000"); b {
+		if b, _ := l.Blocked("192.168.99.9:1000"); b {
 			t.Fatalf("bloqueado antes de tiempo (intento %d)", i)
 		}
-		l.Fail("192.168.1.9:1000")
+		l.Fail("192.168.99.9:1000")
 	}
-	if b, _ := l.Blocked("192.168.1.9:2000"); !b {
+	if b, _ := l.Blocked("192.168.99.9:2000"); !b {
 		t.Fatal("no bloquea tras 3 fallos")
 	}
 	// En IPv6 cuenta el /64 entero.
@@ -102,7 +102,7 @@ func TestLimiter(t *testing.T) {
 		t.Fatal("cambiar de IPv6 dentro del /64 esquiva el bloqueo")
 	}
 	now = now.Add(11 * time.Minute)
-	if b, _ := l.Blocked("192.168.1.9:2000"); b {
+	if b, _ := l.Blocked("192.168.99.9:2000"); b {
 		t.Fatal("el bloqueo no caduca")
 	}
 }

@@ -50,7 +50,7 @@ type Suggestion struct {
 
 // Options controla una búsqueda.
 type Options struct {
-	// Prefix, si no está vacío, escanea solo ese rango (por ejemplo la red del pueblo, 192.168.50.0/24).
+	// Prefix, si no está vacío, escanea solo ese rango (por ejemplo la red de otro sitio, 192.168.99.0/24).
 	Prefix string
 	// Timeout por conexión.
 	DialTimeout time.Duration
@@ -64,7 +64,7 @@ func ParsePrefix(s string) (netip.Prefix, error) {
 	}
 	p, err := netip.ParsePrefix(s)
 	if err != nil {
-		return p, errors.New("rango no válido; escribe algo como 192.168.50.0/24")
+		return p, errors.New("rango no válido; escribe algo como 192.168.99.0/24")
 	}
 	p = p.Masked()
 	if !netguard.IsPrivatePrefix(p) {

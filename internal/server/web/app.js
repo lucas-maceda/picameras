@@ -278,7 +278,7 @@ discoverDialog.addEventListener('click', (ev) => {
     if (a === 'scan-local') scan('', ev.target);
     if (a === 'scan-remote') {
         const p = discoverDialog.querySelector('[name=prefix]').value.trim();
-        if (!p) { $('[data-role=discover-status]', discoverDialog).textContent = 'Escribe la red, por ejemplo 192.168.50.0/24'; return; }
+        if (!p) { $('[data-role=discover-status]', discoverDialog).textContent = 'Escribe la red, por ejemplo 192.168.99.0/24'; return; }
         scan(p, ev.target);
     }
     if (a === 'manual') { discoverDialog.close(); openCameraForm(null, {}); }
@@ -317,7 +317,7 @@ function openCameraForm(cam, prefill = {}) {
     }
     camForm.elements.kind.value = v.kind || 'rtsp';
     camForm.elements.password.placeholder = cam?.hasPassword ? 'Sin cambios' : '';
-    const sites = new Set(['Casa', 'Local', 'Pueblo', ...state.cameras.map((c) => c.site)]);
+    const sites = new Set(['Casa', ...state.cameras.map((c) => c.site)]);
     $('#sites').replaceChildren(...[...sites].map((s) => el('option', {value: s})));
     $('#camera-title').textContent = cam ? `Editar ${cam.name}` : 'Nueva cámara';
     $('[data-action=delete]', camDialog).hidden = !cam;

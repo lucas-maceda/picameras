@@ -29,7 +29,7 @@
         <h2 id="discover-title">Añadir cámara</h2>
         <button class="btn ghost icon" value="close" aria-label="Cerrar">✕</button>
       </div>
-      <p class="hint">Busco cámaras en la red de este equipo. Para la de otro sitio (el local, el pueblo) unido
+      <p class="hint">Busco cámaras en la red de este equipo. Para la de otro sitio unido
         por Tailscale o WireGuard, escribe su red abajo.</p>
       <div class="row">
         <button type="button" class="btn primary" data-action="scan-local">Buscar en esta red</button>
@@ -37,7 +37,7 @@
       </div>
       <div class="row">
         <label class="grow">Otra red
-          <input name="prefix" placeholder="192.168.50.0/24" inputmode="decimal" autocomplete="off">
+          <input name="prefix" placeholder="192.168.99.0/24" inputmode="decimal" autocomplete="off">
         </label>
         <button type="button" class="btn" data-action="scan-remote">Buscar ahí</button>
       </div>
@@ -67,7 +67,7 @@
         </select>
       </label>
       <div class="grid2">
-        <label>Dirección <input name="host" required placeholder="192.168.1.50" autocomplete="off" spellcheck="false"></label>
+        <label>Dirección <input name="host" required placeholder="IP de la cámara" autocomplete="off" spellcheck="false"></label>
         <label>Puerto <input name="port" inputmode="numeric" placeholder="554" autocomplete="off"></label>
       </div>
       <label data-kinds="rtsp">Marca (rellena las rutas)

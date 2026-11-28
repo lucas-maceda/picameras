@@ -34,7 +34,7 @@ func AllowedRemoteAddr(remote string) bool {
 	return Allowed(ip.WithZone(""))
 }
 
-// IsPrivatePrefix indica si un rango entero es privado (para escanear otra red, por ejemplo la del pueblo).
+// IsPrivatePrefix indica si un rango entero es privado (para escanear otra red, por ejemplo la de otro sitio).
 func IsPrivatePrefix(p netip.Prefix) bool {
 	p = p.Masked()
 	first := p.Addr()
