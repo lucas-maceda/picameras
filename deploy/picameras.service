@@ -1,0 +1,43 @@
+# Servicio de systemd para Raspberry Pi OS / Debian / Ubuntu.
+# Instalación: ver docs/instalar.md. Corre con un usuario propio sin privilegios y el sistema de ficheros
+# en solo lectura salvo su directorio de datos.
+[Unit]
+Description=PiCameras: monitor de cámaras para la red local
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=picameras
+Group=picameras
+ExecStart=/opt/picameras/picameras -data /var/lib/picameras -go2rtc /opt/picameras/go2rtc
+StateDirectory=picameras
+StateDirectoryMode=0700
+Restart=on-failure
+RestartSec=5
+
+# Endurecimiento
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+CapabilityBoundingSet=
+AmbientCapabilities=
+SystemCallArchitectures=native
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
